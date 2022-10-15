@@ -27,8 +27,13 @@ const createFiliere = async (req: Request, res: Response) => {
 const getAllFilieres = async (req: Request, res: Response) => {
   //MODEL
   const filiere = getModelFiliere();
+  const cours = ConnexionBd.getSequelizeDb().models.Cour;
+  const etudiants = ConnexionBd.getSequelizeDb().models.Etudiant;
+
   try {
-    const dataFilieres = await filiere.findAll();
+    const dataFilieres = await filiere.findAll({
+      include: [cours, etudiants],
+    });
     res.status(200).json(dataFilieres);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);
@@ -39,9 +44,12 @@ const getAllFilieres = async (req: Request, res: Response) => {
 const getFiliereById = async (req: Request, res: Response) => {
   //MODEL
   const filiere = getModelFiliere();
+  const cours = ConnexionBd.getSequelizeDb().models.Cour;
   try {
     const id = req.params._id;
-    const dataFiliereById = await filiere.findByPk(id);
+    const dataFiliereById = await filiere.findByPk(id, {
+      include: [cours],
+    });
     if (!dataFiliereById) {
       res.status(404).json({ messageNotFound });
     } else {

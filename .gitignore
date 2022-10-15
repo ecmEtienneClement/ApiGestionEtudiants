@@ -1,7 +1,5 @@
 
-/dist
-/tmp
-/out-tsc
+/src
 /node_modules
 /tokenGit
 **/node_modules

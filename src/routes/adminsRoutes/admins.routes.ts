@@ -8,6 +8,7 @@ router.post("/", adminsCtrl.createAdmin);
 router.get("/", adminsCtrl.getAllAdmins);
 router.get("/:_id", adminsCtrl.getAdminById);
 router.put("/:_id", adminsCtrl.updateAdminById);
+router.put("/up_pwd:_id", adminsCtrl.updatePwdAdminById);
 router.delete("/:_id", adminsCtrl.deleteAdminById);
 router.delete("/all", adminsCtrl.deleteAllAdmins);
 //TODO

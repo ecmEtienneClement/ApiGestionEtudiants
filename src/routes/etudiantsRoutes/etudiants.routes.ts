@@ -1,14 +1,17 @@
 import { Router } from "express";
+import adminsAutho from "../../authorizations/admins.autho";
+import etudiantsAutho from "../../authorizations/etudiants.autho";
 import etudiantCtrl from "./etudiants.ctrl";
 const router = Router();
 
 //MISE EN PLACE DES METHODES
-router.post("/", etudiantCtrl.createEtudiant);
-router.get("/", etudiantCtrl.getAllEtudiants);
-router.get("/:_id", etudiantCtrl.getEtudiantById);
-router.put("/:_id", etudiantCtrl.updateEtudiantById);
-router.delete("/:_id", etudiantCtrl.deleteEtudiantById);
-router.delete("/all", etudiantCtrl.deleteAllEtudiants);
+router.post("/", adminsAutho, etudiantCtrl.createEtudiant);
+router.get("/", adminsAutho, etudiantCtrl.getAllEtudiants);
+router.get("/:_id", etudiantsAutho, etudiantCtrl.getEtudiantById);
+router.put("/:_id", etudiantsAutho, etudiantCtrl.updateEtudiantById);
+router.put("/up_pwd/:_id", adminsAutho, etudiantCtrl.updatePwdEtudiantById);
+router.delete("/all", adminsAutho, etudiantCtrl.deleteAllEtudiants);
+router.delete("/:_id", adminsAutho, etudiantCtrl.deleteEtudiantById);
 
 //TODO
 export default router;

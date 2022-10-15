@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import ConnexionBd from "../../connexionDb/connexionDb";
 import RoutesErrorHelper from "../routesErrorHelper";
 
@@ -13,10 +14,21 @@ const messageNotFound = "Cet étudiant n'existe pas.";
 
 //TODO POSTE CREATE ETUDIANT
 const createEtudiant = async (req: Request, res: Response) => {
+  if (!req.body.mdp) {
+    return res.status(400).json({
+      message: "Désoler votre Requête ne contient pas de mot de passe",
+    });
+  }
+  const isValid: boolean = RoutesErrorHelper.pwdIsValid(req.body.mdp, res);
+  if (!isValid) {
+    return false;
+  }
   //MODEL
   const etudiant = getModelEtudiant();
+  const psw: string = req.body.mdp;
   try {
-    const dataEtudiant = await etudiant.create({ ...req.body });
+    const pswHash: string = await bcrypt.hash(psw, 10);
+    const dataEtudiant = await etudiant.create({ ...req.body, mdp: pswHash });
     res.status(200).json(dataEtudiant);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);
@@ -27,8 +39,14 @@ const createEtudiant = async (req: Request, res: Response) => {
 const getAllEtudiants = async (req: Request, res: Response) => {
   //MODEL
   const etudiant = getModelEtudiant();
+  const filiere = ConnexionBd.getSequelizeDb().models.Filiere;
+  const nivoEtude = ConnexionBd.getSequelizeDb().models.NivoEtude;
+  const notes = ConnexionBd.getSequelizeDb().models.Note;
+
   try {
-    const dataEtudiants = await etudiant.findAll();
+    const dataEtudiants = await etudiant.findAll({
+      include: [filiere, nivoEtude, notes],
+    });
     res.status(200).json(dataEtudiants);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);
@@ -39,13 +57,20 @@ const getAllEtudiants = async (req: Request, res: Response) => {
 const getEtudiantById = async (req: Request, res: Response) => {
   //MODEL
   const etudiant = getModelEtudiant();
+  const filiere = ConnexionBd.getSequelizeDb().models.Filiere;
+  const nivoEtude = ConnexionBd.getSequelizeDb().models.NivoEtude;
+  const notes = ConnexionBd.getSequelizeDb().models.Note;
+
   try {
     const id = req.params._id;
-    const dataEtudiantById = await etudiant.findByPk(id);
+    const dataEtudiantById = await etudiant.findByPk(id, {
+      include: [filiere, nivoEtude, notes],
+    });
+
     if (!dataEtudiantById) {
-      res.status(404).json({ messageNotFound });
+      return res.status(404).json({ messageNotFound });
     } else {
-      res.status(200).json(dataEtudiantById);
+      return res.status(200).json(dataEtudiantById);
     }
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);
@@ -63,6 +88,35 @@ const updateEtudiantById = async (req: Request, res: Response) => {
       res.status(404).json({ messageNotFound });
     } else {
       await etudiant.update({ ...req.body }, { where: { _id: id } });
+      res.status(200).json(true);
+    }
+  } catch (error) {
+    RoutesErrorHelper.routesErrors(error, res);
+  }
+};
+
+//TODO UPDATE PWD ETUDIANT
+const updatePwdEtudiantById = async (req: Request, res: Response) => {
+  //Verification si la Requête contient le mdp
+  if (!req.body.mdp) {
+    return res.status(400).json({
+      message: "Désoler votre Requête ne contient pas de mot de passe",
+    });
+  }
+  //MODEL
+  const etudiant = getModelEtudiant();
+  try {
+    const id = req.params._id;
+    const dataEtudiantById = await etudiant.findByPk(id);
+    if (!dataEtudiantById) {
+      res.status(404).json({ messageNotFound });
+    } else {
+      const pwd = req.body.mdp;
+      const pwdHash: string = await bcrypt.hash(pwd, 10);
+      await etudiant.update(
+        { ...req.body, mdp: pwdHash },
+        { where: { _id: id } }
+      );
       res.status(200).json(true);
     }
   } catch (error) {
@@ -107,6 +161,7 @@ const EtudiantsCtrl = {
   getAllEtudiants,
   getEtudiantById,
   updateEtudiantById,
+  updatePwdEtudiantById,
   deleteEtudiantById,
   deleteAllEtudiants,
 };

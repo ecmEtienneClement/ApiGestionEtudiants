@@ -17,7 +17,10 @@ export default async (sequelize: any, dataTypes: any) => {
           notNull: { msg: "Le niveau d'étude est requise." },
           len: [2, 30],
         },
-        unique: true,
+        unique: {
+          name: "nom",
+          msg: "Désoler cet niveau d'étude existe déja.",
+        },
         allowNull: false,
       },
     },

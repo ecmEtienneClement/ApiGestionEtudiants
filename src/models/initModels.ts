@@ -68,20 +68,20 @@ export default class InitModels {
 
     //TODO COUR RELATION
     //RELATION COUR AND FILIERE
-    courModel.belongsToMany(filiereModel, { through: "Cours_Filiere" });
-    filiereModel.belongsToMany(courModel, { through: "Cours_Filiere" });
+    courModel.belongsToMany(filiereModel, { through: "Cours_Filieres" });
+    filiereModel.belongsToMany(courModel, { through: "Cours_Filieres" });
     //RELATION COUR AND NIVO_ETUDE
-    courModel.belongsToMany(nivoEtudeModel, { through: "Cours_NivoEtude" });
-    nivoEtudeModel.belongsToMany(courModel, { through: "Cours_NivoEtude" });
+    courModel.belongsToMany(nivoEtudeModel, { through: "Cours_NivoEtudes" });
+    nivoEtudeModel.belongsToMany(courModel, { through: "Cours_NivoEtudes" });
 
     //TODO NOTE RELATION
-    //RELATION NOTE AND FILIERE
-    filiereModel.hasMany(noteModel, {
+    //RELATION NOTE AND NIVEAU ETUDE
+    nivoEtudeModel.hasMany(noteModel, {
       foreignKey: {
         allowNull: false,
       },
     });
-    noteModel.belongsTo(filiereModel);
+    noteModel.belongsTo(nivoEtudeModel);
     //RELATION NOTE AND COUR
     courModel.hasMany(noteModel, {
       foreignKey: {

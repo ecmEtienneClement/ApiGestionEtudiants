@@ -23,4 +23,30 @@ export default class RoutesErrorHelper {
       });
     }
   }
+
+  //TODO
+  /**
+   * name
+   */
+  public static pwdIsValid(pwd: string, res: Response): boolean {
+    const regIncludeLettreMini = new RegExp("[a-z]+", "g");
+    const regIncludeLettreMaju = new RegExp("[A-Z]+", "g");
+    const regIncludeChiffre = new RegExp("[0-9]+", "g");
+    const message: string = "Votre mot de passe doit avoir au moins";
+
+    //Verification
+    if (!regIncludeLettreMini.test(pwd)) {
+      res.json({ message: message + " une lettre minuscule" });
+      return false;
+    }
+    if (!regIncludeLettreMaju.test(pwd)) {
+      res.json({ message: message + " une lettre majuscule" });
+      return false;
+    }
+    if (!regIncludeChiffre.test(pwd)) {
+      res.json({ message: message + " un chiffre" });
+      return false;
+    }
+    return true;
+  }
 }

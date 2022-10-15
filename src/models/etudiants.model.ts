@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { INET, Sequelize } from "sequelize";
 
 //TODO
 export default async (sequelize: Sequelize, dataTypes: any) => {
@@ -44,7 +44,7 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
             }
           },
         },
-        unique: true,
+        unique: { name: "ine", msg: "Désoler cet INE existe déja." },
         allowNull: false,
       },
       //TODO
@@ -57,6 +57,11 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
           notNull: { msg: "Le numéro de téléphone de l'étudiant est requise." },
           len: [9, 9],
         },
+        unique: {
+          name: "numeroTelephone",
+          msg: "Désoler ce numéro de téléphone  existe déja.",
+        },
+
         allowNull: false,
       },
       //TODO
@@ -78,14 +83,20 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
           notNull: { msg: "L'email de l'étudiant est requise." },
           len: [10, 50],
           validateMail(value: string) {
-            if (!value.startsWith(this.prenom + "." + this.nom)) {
-              throw new Error("Format email invalide.");
+            let prenom: string = this.prenom.trim();
+            while (prenom.includes(" ")) {
+              const prenomReplace = prenom.replace(" ", "");
+              prenom = prenomReplace;
+            }
+            if (!value.startsWith(prenom + "." + this.nom)) {
+              throw new Error("Format email invalide");
             }
             if (!value.endsWith("@uvs.edu.sn")) {
               throw new Error("Format email invalide: ... @uvs.edu.sn");
             }
           },
         },
+        unique: { name: "email", msg: "Désoler cet email existe déja." },
         allowNull: false,
       },
       //TODO
@@ -96,7 +107,10 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
             msg: "Le mot de passe de l'étudiant ne peut étre vide.",
           },
           notNull: { msg: "Le mot de passe de l'étudiant est requise." },
-          len: [6, 20],
+          len: {
+            args: [6, 250],
+            msg: "Le mot de passe de l'étudiant doit être comprise entre 6 à 250 caractères.",
+          },
         },
         allowNull: false,
       },

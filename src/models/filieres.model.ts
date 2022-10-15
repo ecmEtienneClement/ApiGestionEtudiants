@@ -17,7 +17,10 @@ export default async (sequelize: any, dataTypes: any) => {
           notNull: { msg: "Le nom de la filière est requise." },
           len: [2, 30],
         },
-        unique: true,
+        unique: {
+          name: "nom",
+          msg: "Désoler cette filière existe déja.",
+        },
         allowNull: false,
       },
     },

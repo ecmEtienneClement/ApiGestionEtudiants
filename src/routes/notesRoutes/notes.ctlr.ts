@@ -27,8 +27,19 @@ const createNote = async (req: Request, res: Response) => {
 const getAllNotes = async (req: Request, res: Response) => {
   //MODEL
   const note = getModelNote();
+  const cour = ConnexionBd.getSequelizeDb().models.Cour;
+  const nivoEtude = ConnexionBd.getSequelizeDb().models.NivoEtude;
+
   try {
-    const dataNotes = await note.findAll();
+    const dataNotes = await note.findAll({
+      attributes: [
+        "note",
+        ["createdAt", "ajouter le"],
+        ["updatedAt", "modifier le"],
+        "Cour.nom",
+      ],
+      include: [cour, nivoEtude],
+    });
     res.status(200).json(dataNotes);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);

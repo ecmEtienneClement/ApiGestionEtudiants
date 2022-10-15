@@ -22,9 +22,11 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
             msg: "Le nom du cour doit être comprise entre 2 à 50 lettres.",
           },
         },
-        unique: true,
+        unique: {
+          name: "nom",
+          msg: "Désoler ce cour existe déja.",
+        },
 
-        /// unique: { name: "nom", msg: "Ce nom du cour existe déja." },
         allowNull: false,
       },
     },

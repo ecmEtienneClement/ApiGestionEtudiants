@@ -25,10 +25,16 @@ const createCour = async (req: Request, res: Response) => {
 
 //TODO GET ALL COURS
 const getAllCours = async (req: Request, res: Response) => {
+  const filieres = ConnexionBd.getSequelizeDb().models.Filiere;
+  const nivoEtudes = ConnexionBd.getSequelizeDb().models.NivoEtude;
+  const notes = ConnexionBd.getSequelizeDb().models.Note;
+
   //MODEL
   const cour = getModelCour();
   try {
-    const dataCours = await cour.findAll();
+    const dataCours = await cour.findAll({
+      include: [filieres, nivoEtudes, notes],
+    });
     res.status(200).json(dataCours);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);
@@ -39,9 +45,13 @@ const getAllCours = async (req: Request, res: Response) => {
 const getCourById = async (req: Request, res: Response) => {
   //MODEL
   const cour = getModelCour();
+  const nivoEtudes = ConnexionBd.getSequelizeDb().models.NivoEtude;
+
   try {
     const id = req.params._id;
-    const dataCourById = await cour.findByPk(id);
+    const dataCourById = await cour.findByPk(id, {
+      include: [nivoEtudes],
+    });
     if (!dataCourById) {
       res.status(404).json({ message });
     } else {

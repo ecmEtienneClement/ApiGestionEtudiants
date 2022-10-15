@@ -27,8 +27,14 @@ const createNivoEtude = async (req: Request, res: Response) => {
 const getAllNivoEtudes = async (req: Request, res: Response) => {
   //MODEL
   const nivoEtude = getModelNivoEtude();
+  const cours = ConnexionBd.getSequelizeDb().models.Cour;
+  const etudiants = ConnexionBd.getSequelizeDb().models.Etudiant;
+  // const notes = ConnexionBd.getSequelizeDb().models.Note;
+
   try {
-    const dataNivoEtudes = await nivoEtude.findAll();
+    const dataNivoEtudes = await nivoEtude.findAll({
+      include: [cours, etudiants],
+    });
     res.status(200).json(dataNivoEtudes);
   } catch (error) {
     RoutesErrorHelper.routesErrors(error, res);

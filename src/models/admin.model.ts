@@ -51,6 +51,11 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
           msg: "Le numéro de téléphone de l'adminitrateur est invalide.",
         },
       },
+      unique: {
+        name: "numeroTelephone",
+        msg: "Désoler ce numéro de téléphone existe déja.",
+      },
+
       allowNull: false,
     },
     //TODO
@@ -80,15 +85,15 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
             const prenomReplace = prenom.replace(" ", "");
             prenom = prenomReplace;
           }
-
           if (!value.startsWith("$" + prenom + "." + this.nom)) {
-            throw new Error("Format email invalide");
+            throw new Error("Format email invalide : $...");
           }
           if (!value.endsWith("@uvs.edu.sn")) {
             throw new Error("Format email invalide: ... @uvs.edu.sn");
           }
         },
       },
+      unique: { name: "email", msg: "Désoler cet email existe déja." },
       allowNull: false,
     },
     //TODO
@@ -100,8 +105,8 @@ export default async (sequelize: Sequelize, dataTypes: any) => {
         },
         notNull: { msg: "Le mot de passe de l'adminitrateur est requise." },
         len: {
-          args: [6, 25],
-          msg: "Le mot de passe de l'adminitrateur doit être comprise entre 6 à 25 caractères.",
+          args: [6, 250],
+          msg: "Le mot de passe de l'adminitrateur doit être comprise entre 6 à 250 caractères.",
         },
       },
       allowNull: false,
